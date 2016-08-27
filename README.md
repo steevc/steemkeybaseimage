@@ -1,4 +1,4 @@
-# steemkaybaseimage
+# steemkeybaseimage
 Scratching an itch to save time shifting images to Kaybase storage to use on Steemit
 
 To get an image into a Steemit post I needed to download it from Google Photos, possibly resize, rename,
