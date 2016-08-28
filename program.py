@@ -1,4 +1,6 @@
 import os, shutil, sys
+from datetime import date
+from PIL import Image
 
 maximage = 1000
 keybase_local_folder = "/keybase/public/steevc/steemit"
@@ -7,26 +9,46 @@ keybase_web_folder = "https://steevc.keybase.pub/steemit/"
 
 def get_filename(filename, description):
     name, suffix = os.path.splitext(filename)
-    newname = description.replace(" ", "") + suffix
-    print(newname)
+    newname = date.today().isoformat() + description.replace(" ", "") + suffix
+    #print(newname)
     return newname
 
 
-def move_file(sourcefile, description):
-    newname = get_filename(sourcefile, description)
-    target = os.path.join(keybase_local_folder, newname)
+def move_file(sourcefile, target):
     shutil.copy(sourcefile, target)
-    return newname
+
+
+def resize_image(image, target):
+    # Shrink to below max size
+    scale = 1.0
+    if image.size[0] > image.size[1]:
+        dim = image.size[0]
+    else:
+        dim = image.size[1]
+    while dim > maximage:
+        scale /= 2
+        dim /= 2
+    smimage = image.resize((int(image.size[0]*scale), int(image.size[1]*scale)))
+    smimage.save(target)
 
 
 def process(filename, description):
-    # resize
-    # move
-    target = move_file(filename, description)
-    web_file = keybase_web_folder + target
+    im = Image.open(filename)
+    print(im.size)
+    newname = get_filename(filename, description)
+    target = os.path.join(keybase_local_folder, newname)
+    if im.size[0] > maximage or im.size[1] > maximage:
+        resize_image(im, target)
+    else:
+        move_file(filename, target) # Just move and rename
+
+    web_file = keybase_web_folder + newname
     print("Web file", web_file)
     steemit_md = "![" + description + "](" + web_file + ")"
     print(steemit_md)
 
 if __name__ == "__main__":
-    process("/home/steve/Downloads/20160821picks.jpg", "Test picture")
+    if len(sys.argv) < 2:
+        process("/home/steve/Downloads/20160821picks.jpg", "Test picture")
+    else:
+        process(sys.argv[1], sys.argv[2])
