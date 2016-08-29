@@ -1,6 +1,7 @@
 import os, shutil, sys
 from datetime import date
 from PIL import Image
+import pyperclip
 #from tkinter import Tk
 
 maximage = 1000
@@ -36,13 +37,10 @@ def resize_image(image, target):
 
 
 # Issues with pip to install packages
-#def text_to_clipboard(text):
-#    # From http://stackoverflow.com/questions/11063458/python-script-to-copy-text-to-clipboard
-#    r = Tk()
-#    r.withdraw()
-#    r.clipboard_clear()
-#    r.clipboard_append(text)
-#    r.destroy()
+def text_to_clipboard(text):
+    # Need to install xclip or xsel for Linux
+    # https://pyperclip.readthedocs.io/en/latest/introduction.html#not-implemented-error
+    pyperclip.copy(text)
 
 
 def process(filename, description):
@@ -59,7 +57,7 @@ def process(filename, description):
     print("Web file", web_file)
     steemit_md = "![" + description + "](" + web_file + ")"
     print(steemit_md)
-    #text_to_clipboard(steemit_md)
+    text_to_clipboard(steemit_md)
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
